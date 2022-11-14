@@ -1,5 +1,6 @@
 {
-  "name": "starterkits",
+  "name": "mesto-backend",
+  "autor": "Igor Petrov",
   "version": "1.0.0",
   "description": "mesto backend",
   "main": "dist/app.js",
