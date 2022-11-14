@@ -32,3 +32,35 @@ export const deleteCard = async (req: Request, res: Response) => {
     return res.status(500).send({ message: "Error while processing request" });
   }
 };
+
+export const enableLike = async (req: any, res: Response) => {
+  try {
+    const likedCard = await card.findByIdAndUpdate(
+      req.params.cardId,
+      {
+        $addToSet: { likes: req.user._id },
+      },
+      { new: true }
+    );
+    return res.status(200).send(likedCard);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: "Error while processing request" });
+  }
+};
+
+export const disableLike = async (req: any, res: Response) => {
+  try {
+    const dislikedCard = await card.findByIdAndUpdate(
+      req.params.cardId,
+      {
+        $pull: { likes: req.user._id },
+      },
+      { new: true }
+    );
+    return res.status(200).send(dislikedCard);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: "Error while processing request" });
+  }
+};
