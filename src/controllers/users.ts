@@ -12,7 +12,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const currentUser = await user.findById(req.params._id);
+    const currentUser = await user.findById(req.params.userId);
     return res.status(200).send(currentUser);
   } catch (err) {
     return res.status(500).send({ message: "Error while processing request" });

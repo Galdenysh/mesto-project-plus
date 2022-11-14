@@ -1,7 +1,7 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
-const client = new MongoClient("mongodb://localhost:27017");
+const mestoDb = mongoose.connect("mongodb://localhost:27017/mestodb");
 
-export default function getStaticMongoClient(): MongoClient {
-  return client;
+export default function getMestoDb() {
+  return mestoDb;
 }
