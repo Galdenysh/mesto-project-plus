@@ -32,3 +32,34 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(500).send({ message: "Error while processing request" });
   }
 };
+
+export const refrashUser = async (req: any, res: Response) => {
+  const { name, about } = req.body;
+  try {
+    const refrashedUser = await user.findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        about,
+      },
+      { new: true }
+    );
+    return res.status(200).send(refrashedUser);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: "Error while processing request" });
+  }
+};
+
+export const refrashAvatar = async (req: any, res: Response) => {
+  const { avatar } = req.body;
+  try {
+    const refrashedUser = await user.findByIdAndUpdate(req.user._id, {
+      avatar,
+    });
+    return res.status(200).send(refrashedUser);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: "Error while processing request" });
+  }
+};

@@ -10,8 +10,6 @@ getMestoDb();
 
 app.use(express.json());
 app.use(express.urlencoded());
-app.use("/users", userRouter);
-app.use("/cards", cardRouter);
 
 // Временное решение авторизации
 app.use((req: any, res: Response, next) => {
@@ -21,6 +19,9 @@ app.use((req: any, res: Response, next) => {
 
   next();
 });
+
+app.use("/users", userRouter);
+app.use("/cards", cardRouter);
 
 app.listen(+PORT, () => {
   // eslint-disable-next-line no-console
