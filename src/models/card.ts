@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validUrl from "../utils/validUrl";
 
 const { Schema } = mongoose;
 
@@ -20,6 +21,10 @@ const cardSchema = new Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (str: string) => validUrl(str),
+      message: "Необходимо передать ссылку",
+    },
   },
   owner: {
     type: mongoose.Types.ObjectId,

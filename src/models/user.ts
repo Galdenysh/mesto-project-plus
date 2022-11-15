@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import validUrl from "../utils/validUrl";
 
 const { Schema } = mongoose;
 
@@ -24,6 +25,10 @@ const userSchema = new Schema({
   avatar: {
     type: String,
     required: true,
+    validate: {
+      validator: (str: string) => validUrl(str),
+      message: "URL-адрес недействителен",
+    },
   },
 });
 

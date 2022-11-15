@@ -11,7 +11,7 @@ export const getCards = async (req: Request, res: Response) => {
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -24,13 +24,15 @@ export const createCard = async (req: Request, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible card data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -44,13 +46,15 @@ export const deleteCard = async (req: Request, res: Response) => {
     if (error.name === "CastError") {
       return res
         .status(NOT_FOUND)
-        .send({ message: `Card ${req.params.cardId} not found` });
+        .send({
+          message: `Карточка с указанным ${req.params.cardId} не найдена`,
+        });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -68,19 +72,23 @@ export const enableLike = async (req: any, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible card data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     if (error.name === "CastError") {
       return res
         .status(NOT_FOUND)
-        .send({ message: `Card ${req.params.cardId} not found` });
+        .send({
+          message: `Карточка с указанным ${req.params.cardId} не найдена`,
+        });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -98,18 +106,22 @@ export const disableLike = async (req: any, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible card data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     if (error.name === "CastError") {
       return res
         .status(NOT_FOUND)
-        .send({ message: `Card ${req.params.cardId} not found` });
+        .send({
+          message: `Карточка с указанным ${req.params.cardId} не найдена`,
+        });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
