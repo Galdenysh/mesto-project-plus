@@ -30,6 +30,7 @@
     "quotes": "off",
     "comma-dangle": "off",
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "operator-linebreak": "off"
   }
 }

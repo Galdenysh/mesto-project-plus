@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const mestoDb = mongoose.connect("mongodb://localhost:27017/mestodb");
+dotenv.config();
+
+const mongoDb = process.env.MONGO_DB as string;
+const mestoDb = mongoose.connect(mongoDb);
 
 export default function getMestoDb() {
   return mestoDb;

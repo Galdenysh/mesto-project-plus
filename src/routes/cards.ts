@@ -12,7 +12,7 @@ const cardRouter = Router();
 cardRouter.get("/", getCards);
 cardRouter.post("/", createCard);
 cardRouter.delete("/:cardId", deleteCard);
-cardRouter.put("/:userId/likes", enableLike);
-cardRouter.delete("/:userId/likes", disableLike);
+cardRouter.put("/:cardId/likes", enableLike);
+cardRouter.delete("/:cardId/likes", disableLike);
 
 export default cardRouter;

@@ -11,7 +11,7 @@ export const getUsers = async (req: Request, res: Response) => {
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -23,15 +23,15 @@ export const getUser = async (req: Request, res: Response) => {
     const error = err as Error;
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({ message: `User ${req.params.userId} not found` });
+      return res.status(NOT_FOUND).send({
+        message: `Пользователь с указанным ${req.params.userId} не найден`,
+      });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -44,13 +44,15 @@ export const createUser = async (req: Request, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible user data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -70,7 +72,9 @@ export const refrashUser = async (req: any, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible user data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     if (error.name === "CastError") {
@@ -82,7 +86,7 @@ export const refrashUser = async (req: any, res: Response) => {
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
 
@@ -97,18 +101,20 @@ export const refrashAvatar = async (req: any, res: Response) => {
     const error = err as Error;
 
     if (error.name === "ValidationError") {
-      return res.status(BAD_REQUEST).send({ message: "Unvalible user data" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Переданы некорректные данные" });
     }
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({ message: `User ${req.user._id} not found` });
+      return res.status(NOT_FOUND).send({
+        message: `Пользователь с указанным ${req.user._id} не найден`,
+      });
     }
 
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "Error while processing request" });
+      .send({ message: "На сервере произошла ошибка" });
   }
 };
