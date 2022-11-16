@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import getMestoDb from "./database/mongo";
 import userRouter from "./routes/users";
 import cardRouter from "./routes/cards";
+import { createUser, login } from "./controllers/users";
+import auth from "./middlewares/auth";
 
 const port = process.env.PORT as string;
 const app = express();
@@ -12,16 +14,20 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // Временное решение авторизации
-app.use((req: Request, res: Response, next) => {
-  req.user = {
-    _id: "6372a13a14d8d4117b27d55f",
-  };
+// app.use((req: Request, res: Response, next) => {
+//   req.user = {
+//     _id: "6372a13a14d8d4117b27d55f",
+//   };
 
-  next();
-});
+//   next();
+// });
 
+app.use(auth);
 app.use("/users", userRouter);
 app.use("/cards", cardRouter);
+
+app.post("/signin", login);
+app.post("/signup", createUser);
 
 app.listen(+port, () => {
   // eslint-disable-next-line no-console

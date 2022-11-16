@@ -18,7 +18,7 @@ export const getCards = async (req: Request, res: Response) => {
 export const createCard = async (req: Request, res: Response) => {
   const { name, link } = req.body;
   try {
-    const newCard = await card.create({ name, link });
+    const newCard = await card.create({ name, link, owner: req.user._id });
     return res.status(200).send(newCard);
   } catch (err) {
     const error = err as Error;

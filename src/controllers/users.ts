@@ -142,9 +142,10 @@ export const refrashAvatar = async (req: any, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const secretKey = process.env.SECRET_KEY as string;
   try {
     const findedUser = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: findedUser._id }, "some-secret-key", {
+    const token = jwt.sign({ _id: findedUser._id }, secretKey, {
       expiresIn: "7d",
     });
     return res.status(200).send({ token });
