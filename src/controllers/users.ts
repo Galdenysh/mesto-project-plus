@@ -1,12 +1,18 @@
 /* eslint-disable no-console */
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import hashPass from "../utils/hashPass";
-import { BAD_REQUEST, ITERNAL_SERVER_ERROR, NOT_FOUND } from "../utils/errors";
-import user from "../models/user";
+import {
+  BAD_REQUEST,
+  ITERNAL_SERVER_ERROR,
+  NOT_FOUND,
+  UNAUTHORIZED,
+} from "../utils/errors";
+import User from "../models/user";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await user.find({});
+    const users = await User.find({});
     return res.status(200).send(users);
   } catch (err) {
     console.error(err);
@@ -18,7 +24,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const currentUser = await user.findById(req.params.userId);
+    const currentUser = await User.findById(req.params.userId);
     return res.status(200).send(currentUser);
   } catch (err) {
     const error = err as Error;
@@ -47,7 +53,7 @@ export const createUser = async (req: Request, res: Response) => {
         .send({ message: "На сервере произошла ошибка" });
     }
 
-    const newUser = await user.create({
+    const newUser = await User.create({
       name,
       about,
       avatar,
@@ -74,7 +80,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const refrashUser = async (req: any, res: Response) => {
   const { name, about } = req.body;
   try {
-    const refrashedUser = await user.findByIdAndUpdate(
+    const refrashedUser = await User.findByIdAndUpdate(
       req.user._id,
       {
         name,
@@ -108,7 +114,7 @@ export const refrashUser = async (req: any, res: Response) => {
 export const refrashAvatar = async (req: any, res: Response) => {
   const { avatar } = req.body;
   try {
-    const refrashedUser = await user.findByIdAndUpdate(req.user._id, {
+    const refrashedUser = await User.findByIdAndUpdate(req.user._id, {
       avatar,
     });
     return res.status(200).send(refrashedUser);
@@ -131,5 +137,21 @@ export const refrashAvatar = async (req: any, res: Response) => {
     return res
       .status(ITERNAL_SERVER_ERROR)
       .send({ message: "На сервере произошла ошибка" });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    const findedUser = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: findedUser._id }, "some-secret-key", {
+      expiresIn: "7d",
+    });
+    return res.status(200).send({ token });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(UNAUTHORIZED)
+      .send({ message: "Неправильные почта или пароль" });
   }
 };

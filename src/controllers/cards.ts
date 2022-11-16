@@ -44,11 +44,9 @@ export const deleteCard = async (req: Request, res: Response) => {
     const error = err as Error;
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({
-          message: `Карточка с указанным ${req.params.cardId} не найдена`,
-        });
+      return res.status(NOT_FOUND).send({
+        message: `Карточка с указанным ${req.params.cardId} не найдена`,
+      });
     }
 
     console.error(err);
@@ -58,7 +56,7 @@ export const deleteCard = async (req: Request, res: Response) => {
   }
 };
 
-export const enableLike = async (req: any, res: Response) => {
+export const enableLike = async (req: Request, res: Response) => {
   try {
     const likedCard = await card.findByIdAndUpdate(
       req.params.cardId,
@@ -78,11 +76,9 @@ export const enableLike = async (req: any, res: Response) => {
     }
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({
-          message: `Карточка с указанным ${req.params.cardId} не найдена`,
-        });
+      return res.status(NOT_FOUND).send({
+        message: `Карточка с указанным ${req.params.cardId} не найдена`,
+      });
     }
 
     console.error(err);
@@ -92,7 +88,7 @@ export const enableLike = async (req: any, res: Response) => {
   }
 };
 
-export const disableLike = async (req: any, res: Response) => {
+export const disableLike = async (req: Request, res: Response) => {
   try {
     const dislikedCard = await card.findByIdAndUpdate(
       req.params.cardId,
@@ -112,11 +108,9 @@ export const disableLike = async (req: any, res: Response) => {
     }
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({
-          message: `Карточка с указанным ${req.params.cardId} не найдена`,
-        });
+      return res.status(NOT_FOUND).send({
+        message: `Карточка с указанным ${req.params.cardId} не найдена`,
+      });
     }
 
     console.error(err);
