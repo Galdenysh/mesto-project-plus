@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Request, Response } from "express";
+import hashPass from "../utils/hashPass";
 import { BAD_REQUEST, ITERNAL_SERVER_ERROR, NOT_FOUND } from "../utils/errors";
 import user from "../models/user";
 
@@ -36,9 +37,23 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, about, avatar } = req.body;
+  const { name, about, avatar, email, password } = req.body;
   try {
-    const newUser = await user.create({ name, about, avatar });
+    const hashedPass = await hashPass(password);
+
+    if (hashedPass === null) {
+      return res
+        .status(ITERNAL_SERVER_ERROR)
+        .send({ message: "На сервере произошла ошибка" });
+    }
+
+    const newUser = await user.create({
+      name,
+      about,
+      avatar,
+      email,
+      hashedPass,
+    });
     return res.status(200).send(newUser);
   } catch (err) {
     const error = err as Error;
