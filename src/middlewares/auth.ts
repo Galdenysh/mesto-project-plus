@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { UNAUTHORIZED } from "../utils/errors";
+import UnauthorizedError from "../utils/errors/unauthorized-err";
 
 export default (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
@@ -9,7 +9,8 @@ export default (req: Request, res: Response, next: NextFunction) => {
   let payload;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(UNAUTHORIZED).send({ message: "Необходима авторизация" });
+    next(new UnauthorizedError("Необходима авторизация"));
+    return;
   }
 
   const token = authorization.replace("Bearer ", "");
@@ -17,10 +18,10 @@ export default (req: Request, res: Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, secretKey);
   } catch (err) {
-    return res.status(UNAUTHORIZED).send({ message: "Необходима авторизация" });
+    next(new UnauthorizedError("Необходима авторизация"));
+    return;
   }
 
   req.user = payload;
-
   next();
 };
