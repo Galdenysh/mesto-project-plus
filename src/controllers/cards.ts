@@ -2,8 +2,8 @@
 import { Request, Response } from "express";
 import {
   BAD_REQUEST,
+  FORBIDDEN,
   ITERNAL_SERVER_ERROR,
-  LOCKED,
   newError,
   NOT_FOUND,
 } from "../utils/errors";
@@ -44,11 +44,9 @@ export const createCard = async (req: Request, res: Response) => {
 
 export const deleteCard = async (req: Request, res: Response) => {
   try {
-    const currentCard = await Card.findById(req.params.cardId);
-
-    if (!currentCard) {
-      throw newError("CastError", "Карточка не найдена");
-    }
+    const currentCard = await Card.findById(req.params.cardId).orFail(() => {
+      throw newError("SearchError", "Карточка не найдена");
+    });
 
     if (!currentCard.owner.equals(req.user._id)) {
       throw newError("OwnerError", "Нарушение прав доступа");
@@ -60,14 +58,14 @@ export const deleteCard = async (req: Request, res: Response) => {
   } catch (err) {
     const error = err as Error;
 
-    if (error.name === "CastError") {
+    if (error.name === "SearchError") {
       return res.status(NOT_FOUND).send({
         message: `Карточка с указанным ID: ${req.params.cardId} не найдена`,
       });
     }
 
     if (error.name === "OwnerError") {
-      return res.status(LOCKED).send({
+      return res.status(FORBIDDEN).send({
         message: `Недостаточно прав для удаления`,
       });
     }

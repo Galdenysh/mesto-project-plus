@@ -25,17 +25,14 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const currentUser = await User.findById(req.params.userId);
-
-    if (!currentUser) {
-      throw newError("CastError", "Пользователь не найден");
-    }
-
+    const currentUser = await User.findById(req.params.userId).orFail(() => {
+      throw newError("SearchError", "Пользователь не найден");
+    });
     return res.status(200).send(currentUser);
   } catch (err) {
     const error = err as Error;
 
-    if (error.name === "CastError") {
+    if (error.name === "SearchError") {
       return res.status(NOT_FOUND).send({
         message: `Пользователь с указанным ID: ${req.params.userId} не найден`,
       });
@@ -93,12 +90,9 @@ export const refrashUser = async (req: any, res: Response) => {
         about,
       },
       { new: true }
-    );
-
-    if (!refrashedUser) {
-      throw newError("CastError", "Пользователь не найден");
-    }
-
+    ).orFail(() => {
+      throw newError("SearchError", "Пользователь не найден");
+    });
     return res.status(200).send(refrashedUser);
   } catch (err) {
     const error = err as Error;
@@ -109,7 +103,7 @@ export const refrashUser = async (req: any, res: Response) => {
         .send({ message: "Переданы некорректные данные" });
     }
 
-    if (error.name === "CastError") {
+    if (error.name === "SearchError") {
       return res.status(NOT_FOUND).send({
         message: `Пользователь с указанным ID: ${req.user._id} не найден`,
       });
@@ -133,12 +127,9 @@ export const refrashAvatar = async (req: any, res: Response) => {
       {
         new: true,
       }
-    );
-
-    if (!refrashedUser) {
-      throw newError("CastError", "Пользователь не найден");
-    }
-
+    ).orFail(() => {
+      throw newError("SearchError", "Пользователь не найден");
+    });
     return res.status(200).send(refrashedUser);
   } catch (err) {
     const error = err as Error;
@@ -149,7 +140,7 @@ export const refrashAvatar = async (req: any, res: Response) => {
         .send({ message: "Переданы некорректные данные" });
     }
 
-    if (error.name === "CastError") {
+    if (error.name === "SearchError") {
       return res.status(NOT_FOUND).send({
         message: `Пользователь с указанным ID: ${req.user._id} не найден`,
       });
@@ -181,9 +172,19 @@ export const login = async (req: Request, res: Response) => {
 
 export const getInfo = async (req: Request, res: Response) => {
   try {
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(req.user._id).orFail(() => {
+      throw newError("SearchError", "Пользователь не найден");
+    });
     return res.status(200).send(currentUser);
   } catch (err) {
+    const error = err as Error;
+
+    if (error.name === "SearchError") {
+      return res.status(NOT_FOUND).send({
+        message: `Пользователь с указанным ID: ${req.user._id} не найден`,
+      });
+    }
+
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)
