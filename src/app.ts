@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
+import { errors } from "celebrate";
 import getMestoDb from "./database/mongo";
 import userRouter from "./routes/users";
 import cardRouter from "./routes/cards";
@@ -23,6 +24,8 @@ app.post("/signup", createUser);
 
 app.use("/users", auth, userRouter);
 app.use("/cards", auth, cardRouter);
+
+app.use(errors());
 
 app.use(
   // eslint-disable-next-line no-unused-vars

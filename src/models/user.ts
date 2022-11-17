@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validator from "validator";
-import validUrl from "../utils/validUrl";
+import { validUrl } from "../utils/validUrl";
 
 const { Schema } = mongoose;
 

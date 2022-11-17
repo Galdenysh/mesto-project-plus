@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import validUrl from "../utils/validUrl";
+import { validUrl } from "../utils/validUrl";
 
 const { Schema } = mongoose;
 
