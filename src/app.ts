@@ -27,7 +27,12 @@ app.use("/cards", auth, cardRouter);
 app.use(
   // eslint-disable-next-line no-unused-vars
   (err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) => {
-    const { statusCode = 500, message } = err;
+    const { statusCode = 500, message, name } = err;
+
+    if (name === "ValidationError") {
+      res.status(400).send({ message: "Переданы некорректные данные" });
+      return;
+    }
 
     res.status(statusCode).send({
       message: statusCode === 500 ? "На сервере произошла ошибка" : message,
