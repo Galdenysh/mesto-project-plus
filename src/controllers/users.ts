@@ -89,7 +89,7 @@ export const refrashUser = async (req: any, res: Response) => {
         name,
         about,
       },
-      { new: true }
+      { new: true, runValidators: true }
     ).orFail(() => {
       throw newError("SearchError", "Пользователь не найден");
     });
@@ -126,6 +126,7 @@ export const refrashAvatar = async (req: any, res: Response) => {
       },
       {
         new: true,
+        runValidators: true,
       }
     ).orFail(() => {
       throw newError("SearchError", "Пользователь не найден");
