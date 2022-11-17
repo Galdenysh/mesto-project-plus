@@ -5,6 +5,7 @@ import hashPass from "../utils/hashPass";
 import {
   BAD_REQUEST,
   ITERNAL_SERVER_ERROR,
+  newError,
   NOT_FOUND,
   UNAUTHORIZED,
 } from "../utils/errors";
@@ -25,13 +26,18 @@ export const getUsers = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   try {
     const currentUser = await User.findById(req.params.userId);
+
+    if (!currentUser) {
+      throw newError("CastError", "Пользователь не найден");
+    }
+
     return res.status(200).send(currentUser);
   } catch (err) {
     const error = err as Error;
 
     if (error.name === "CastError") {
       return res.status(NOT_FOUND).send({
-        message: `Пользователь с указанным ${req.params.userId} не найден`,
+        message: `Пользователь с указанным ID: ${req.params.userId} не найден`,
       });
     }
 
@@ -88,6 +94,11 @@ export const refrashUser = async (req: any, res: Response) => {
       },
       { new: true }
     );
+
+    if (!refrashedUser) {
+      throw newError("CastError", "Пользователь не найден");
+    }
+
     return res.status(200).send(refrashedUser);
   } catch (err) {
     const error = err as Error;
@@ -99,9 +110,9 @@ export const refrashUser = async (req: any, res: Response) => {
     }
 
     if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({ message: `User ${req.user._id} not found` });
+      return res.status(NOT_FOUND).send({
+        message: `Пользователь с указанным ID: ${req.user._id} не найден`,
+      });
     }
 
     console.error(err);
@@ -123,6 +134,11 @@ export const refrashAvatar = async (req: any, res: Response) => {
         new: true,
       }
     );
+
+    if (!refrashedUser) {
+      throw newError("CastError", "Пользователь не найден");
+    }
+
     return res.status(200).send(refrashedUser);
   } catch (err) {
     const error = err as Error;
@@ -135,7 +151,7 @@ export const refrashAvatar = async (req: any, res: Response) => {
 
     if (error.name === "CastError") {
       return res.status(NOT_FOUND).send({
-        message: `Пользователь с указанным ${req.user._id} не найден`,
+        message: `Пользователь с указанным ID: ${req.user._id} не найден`,
       });
     }
 
@@ -168,14 +184,6 @@ export const getInfo = async (req: Request, res: Response) => {
     const currentUser = await User.findById(req.user._id);
     return res.status(200).send(currentUser);
   } catch (err) {
-    const error = err as Error;
-
-    if (error.name === "CastError") {
-      return res.status(NOT_FOUND).send({
-        message: `Пользователь с указанным ${req.params.userId} не найден`,
-      });
-    }
-
     console.error(err);
     return res
       .status(ITERNAL_SERVER_ERROR)

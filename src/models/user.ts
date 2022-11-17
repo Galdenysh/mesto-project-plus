@@ -50,6 +50,7 @@ const userSchema = new Schema<IUser, UserModel>({
   email: {
     type: String,
     required: true,
+    unique: true,
     validate: {
       validator: (str: string) => validator.isEmail(str),
       message: "URL-адрес недействителен",
