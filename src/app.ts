@@ -7,6 +7,7 @@ import { createUser, login } from "./controllers/users";
 import auth from "./middlewares/auth";
 import { ErrorWithStatus } from "./utils/types";
 import { createUserScheme, loginScheme } from "./utils/scheme";
+import { requestLogger, errorLogger } from "./middlewares/logger";
 
 const port = process.env.PORT as string;
 const app = express();
@@ -15,6 +16,8 @@ getMestoDb();
 
 app.use(express.json());
 app.use(express.urlencoded());
+
+app.use(requestLogger);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Project Mesto Backend");
@@ -25,6 +28,8 @@ app.post("/signup", celebrate(createUserScheme), createUser);
 
 app.use("/users", auth, userRouter);
 app.use("/cards", auth, cardRouter);
+
+app.use(errorLogger);
 
 app.use(errors());
 
