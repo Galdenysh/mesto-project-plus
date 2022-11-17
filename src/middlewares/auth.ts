@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UNAUTHORIZED } from "../utils/errors";
@@ -19,9 +20,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     return res.status(UNAUTHORIZED).send({ message: "Необходима авторизация" });
   }
 
-  req.user.token = payload;
+  req.user = payload;
 
   next();
-
-  return res.status(200).send({ message: "OK" });
 };

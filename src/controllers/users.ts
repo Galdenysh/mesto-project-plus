@@ -58,7 +58,7 @@ export const createUser = async (req: Request, res: Response) => {
       about,
       avatar,
       email,
-      hashedPass,
+      password: hashedPass,
     });
     return res.status(200).send(newUser);
   } catch (err) {
@@ -114,9 +114,15 @@ export const refrashUser = async (req: any, res: Response) => {
 export const refrashAvatar = async (req: any, res: Response) => {
   const { avatar } = req.body;
   try {
-    const refrashedUser = await User.findByIdAndUpdate(req.user._id, {
-      avatar,
-    });
+    const refrashedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        avatar,
+      },
+      {
+        new: true,
+      }
+    );
     return res.status(200).send(refrashedUser);
   } catch (err) {
     const error = err as Error;
@@ -154,5 +160,25 @@ export const login = async (req: Request, res: Response) => {
     return res
       .status(UNAUTHORIZED)
       .send({ message: "Неправильные почта или пароль" });
+  }
+};
+
+export const getInfo = async (req: Request, res: Response) => {
+  try {
+    const currentUser = await User.findById(req.user._id);
+    return res.status(200).send(currentUser);
+  } catch (err) {
+    const error = err as Error;
+
+    if (error.name === "CastError") {
+      return res.status(NOT_FOUND).send({
+        message: `Пользователь с указанным ${req.params.userId} не найден`,
+      });
+    }
+
+    console.error(err);
+    return res
+      .status(ITERNAL_SERVER_ERROR)
+      .send({ message: "На сервере произошла ошибка" });
   }
 };

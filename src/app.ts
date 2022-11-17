@@ -13,31 +13,23 @@ getMestoDb();
 app.use(express.json());
 app.use(express.urlencoded());
 
-// Временное решение авторизации
-// app.use((req: Request, res: Response, next) => {
-//   req.user = {
-//     _id: "6372a13a14d8d4117b27d55f",
-//   };
-
-//   next();
-// });
-
-app.use(auth);
-app.use("/users", userRouter);
-app.use("/cards", cardRouter);
-
-app.post("/signin", login);
-app.post("/signup", createUser);
-
-app.listen(+port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${port}`);
-});
-
 app.get("/", (req: Request, res: Response) => {
   res.send("Project Mesto Backend");
 });
 
+app.post("/signin", login);
+app.post("/signup", createUser);
+
+app.use(auth);
+
+app.use("/users", userRouter);
+app.use("/cards", cardRouter);
+
 app.get("*", (req: Request, res: Response) => {
   res.status(404).send("Такой страницы не существует");
+});
+
+app.listen(+port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`App listening on port ${port}`);
 });
