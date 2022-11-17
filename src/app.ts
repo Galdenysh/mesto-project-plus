@@ -1,11 +1,12 @@
 import express, { NextFunction, Request, Response } from "express";
-import { errors } from "celebrate";
+import { errors, celebrate } from "celebrate";
 import getMestoDb from "./database/mongo";
 import userRouter from "./routes/users";
 import cardRouter from "./routes/cards";
 import { createUser, login } from "./controllers/users";
 import auth from "./middlewares/auth";
 import { ErrorWithStatus } from "./utils/types";
+import { createUserScheme, loginScheme } from "./utils/scheme";
 
 const port = process.env.PORT as string;
 const app = express();
@@ -19,8 +20,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Project Mesto Backend");
 });
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", celebrate(loginScheme), login);
+app.post("/signup", celebrate(createUserScheme), createUser);
 
 app.use("/users", auth, userRouter);
 app.use("/cards", auth, cardRouter);
