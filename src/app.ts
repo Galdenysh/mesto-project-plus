@@ -34,6 +34,13 @@ app.use(
       return;
     }
 
+    if (name === "MongoServerError") {
+      if (err.code === 11000) {
+        res.status(409).send({ message: "Конфликт данных" });
+        return;
+      }
+    }
+
     res.status(statusCode).send({
       message: statusCode === 500 ? "На сервере произошла ошибка" : message,
     });
