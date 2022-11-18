@@ -1,120 +1,140 @@
-/* eslint-disable no-console */
-import { Request, Response } from "express";
-import { BAD_REQUEST, ITERNAL_SERVER_ERROR, NOT_FOUND } from "../utils/errors";
-import user from "../models/user";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import hashPass from "../utils/hashPass";
+import User from "../models/user";
+import NotFoundError from "../utils/errors/not-found-err";
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const users = await user.find({});
+    const users = await User.find({});
     return res.status(200).send(users);
   } catch (err) {
-    console.error(err);
-    return res
-      .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "На сервере произошла ошибка" });
+    return next(err);
   }
 };
 
-export const getUser = async (req: Request, res: Response) => {
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const currentUser = await user.findById(req.params.userId);
+    const currentUser = await User.findById(req.params.userId).orFail(() => {
+      throw new NotFoundError("Пользователь с указанным ID не найден");
+    });
     return res.status(200).send(currentUser);
   } catch (err) {
-    const error = err as Error;
-
-    if (error.name === "CastError") {
-      return res.status(NOT_FOUND).send({
-        message: `Пользователь с указанным ${req.params.userId} не найден`,
-      });
-    }
-
-    console.error(err);
-    return res
-      .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "На сервере произошла ошибка" });
+    return next(err);
   }
 };
 
-export const createUser = async (req: Request, res: Response) => {
-  const { name, about, avatar } = req.body;
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { name, about, avatar, email, password } = req.body;
   try {
-    const newUser = await user.create({ name, about, avatar });
+    const hashedPass = await hashPass(password);
+
+    if (hashedPass === null) {
+      throw new Error();
+    }
+
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hashedPass,
+    });
     return res.status(200).send(newUser);
   } catch (err) {
-    const error = err as Error;
-
-    if (error.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "Переданы некорректные данные" });
-    }
-
-    console.error(err);
-    return res
-      .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "На сервере произошла ошибка" });
+    return next(err);
   }
 };
 
-export const refrashUser = async (req: any, res: Response) => {
+export const refrashUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { name, about } = req.body;
   try {
-    const refrashedUser = await user.findByIdAndUpdate(
+    const refrashedUser = await User.findByIdAndUpdate(
       req.user._id,
       {
         name,
         about,
       },
-      { new: true }
-    );
-    return res.status(200).send(refrashedUser);
-  } catch (err) {
-    const error = err as Error;
-
-    if (error.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "Переданы некорректные данные" });
-    }
-
-    if (error.name === "CastError") {
-      return res
-        .status(NOT_FOUND)
-        .send({ message: `User ${req.user._id} not found` });
-    }
-
-    console.error(err);
-    return res
-      .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "На сервере произошла ошибка" });
-  }
-};
-
-export const refrashAvatar = async (req: any, res: Response) => {
-  const { avatar } = req.body;
-  try {
-    const refrashedUser = await user.findByIdAndUpdate(req.user._id, {
-      avatar,
+      { new: true, runValidators: true }
+    ).orFail(() => {
+      throw new NotFoundError("Пользователь с указанным ID не найден");
     });
     return res.status(200).send(refrashedUser);
   } catch (err) {
-    const error = err as Error;
+    return next(err);
+  }
+};
 
-    if (error.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "Переданы некорректные данные" });
-    }
+export const refrashAvatar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { avatar } = req.body;
+  try {
+    const refrashedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        avatar,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).orFail(() => {
+      throw new NotFoundError("Пользователь с указанным ID не найден");
+    });
+    return res.status(200).send(refrashedUser);
+  } catch (err) {
+    return next(err);
+  }
+};
 
-    if (error.name === "CastError") {
-      return res.status(NOT_FOUND).send({
-        message: `Пользователь с указанным ${req.user._id} не найден`,
-      });
-    }
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, password } = req.body;
+  const secretKey = process.env.SECRET_KEY as string;
+  try {
+    const findedUser = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: findedUser._id }, secretKey, {
+      expiresIn: "7d",
+    });
+    return res.status(200).send({ token });
+  } catch (err) {
+    return next(err);
+  }
+};
 
-    console.error(err);
-    return res
-      .status(ITERNAL_SERVER_ERROR)
-      .send({ message: "На сервере произошла ошибка" });
+export const getInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const currentUser = await User.findById(req.user._id).orFail(() => {
+      throw new NotFoundError("Пользователь с указанным ID не найден");
+    });
+    return res.status(200).send(currentUser);
+  } catch (err) {
+    return next(err);
   }
 };
