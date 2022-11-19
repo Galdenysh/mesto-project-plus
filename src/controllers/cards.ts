@@ -37,11 +37,12 @@ export const deleteCard = async (
   next: NextFunction
 ) => {
   try {
-    const currentCard = await Card.findById(req.params.cardId).orFail(() => {
-      throw new NotFoundError("Карточка с указанным ID не найдена");
-    });
+    const currentCard = await Card.findById(req.params.cardId);
 
-    if (!currentCard.owner.equals(req.user._id)) {
+    if (!currentCard)
+      throw new NotFoundError("Карточка с указанным ID не найдена");
+
+    if (!currentCard.owner.equals(req.user._id as string)) {
       throw new ForbiddenError("Недостаточно прав для удаления");
     }
 

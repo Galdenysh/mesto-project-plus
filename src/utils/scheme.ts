@@ -33,10 +33,22 @@ export const loginScheme = {
 
 export const createUserScheme = {
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(200),
-    avatar: Joi.string().required().pattern(urlPattern),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(200),
+    avatar: Joi.string().pattern(urlPattern),
     email: Joi.string().required().pattern(emailPattern),
     password: Joi.string().required(),
+  }),
+};
+
+export const cardIdScheme = {
+  params: Joi.object().keys({
+    cardId: Joi.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i),
+  }),
+};
+
+export const userIdScheme = {
+  params: Joi.object().keys({
+    userId: Joi.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i),
   }),
 };

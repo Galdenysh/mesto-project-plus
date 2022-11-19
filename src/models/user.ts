@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { validUrl } from "../utils/validUrl";
+import UnauthorizedError from "../utils/errors/unauthorized-err";
 
 const { Schema } = mongoose;
 
@@ -27,19 +28,16 @@ const userSchema = new Schema<IUser, UserModel>({
     type: String,
     minlenght: 2,
     maxlength: 30,
-    required: true,
     default: "Жак-Ив Кусто",
   },
   about: {
     type: String,
     minlength: 2,
     maxlength: 200,
-    required: true,
     default: "Исследователь",
   },
   avatar: {
     type: String,
-    required: true,
     validate: {
       validator: (str: string) => validUrl(str),
       message: "URL-адрес недействителен",
@@ -72,18 +70,24 @@ userSchema.static(
       )) as IUser | null;
 
       if (!findedUser) {
-        return Promise.reject(new Error("Неправильные почта или пароль"));
+        return Promise.reject(
+          new UnauthorizedError("Неправильные почта или пароль")
+        );
       }
 
       const matched = await bcrypt.compare(password, findedUser.password);
 
       if (!matched) {
-        return Promise.reject(new Error("Неправильные почта или пароль"));
+        return Promise.reject(
+          new UnauthorizedError("Неправильные почта или пароль")
+        );
       }
 
       return findedUser;
     } catch (err) {
-      return Promise.reject(new Error("Неправильные почта или пароль"));
+      return Promise.reject(
+        new UnauthorizedError("Неправильные почта или пароль")
+      );
     }
   }
 );
