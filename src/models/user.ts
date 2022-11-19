@@ -66,12 +66,12 @@ userSchema.static(
   async function findUserByCredentials(email: string, password: string) {
     try {
       const findedUser = (await this.findOne({ email }).select(
-        "+password"
+        "+password",
       )) as IUser | null;
 
       if (!findedUser) {
         return Promise.reject(
-          new UnauthorizedError("Неправильные почта или пароль")
+          new UnauthorizedError("Неправильные почта или пароль"),
         );
       }
 
@@ -79,17 +79,17 @@ userSchema.static(
 
       if (!matched) {
         return Promise.reject(
-          new UnauthorizedError("Неправильные почта или пароль")
+          new UnauthorizedError("Неправильные почта или пароль"),
         );
       }
 
       return findedUser;
     } catch (err) {
       return Promise.reject(
-        new UnauthorizedError("Неправильные почта или пароль")
+        new UnauthorizedError("Неправильные почта или пароль"),
       );
     }
-  }
+  },
 );
 
 export default mongoose.model<IUser, UserModel>("User", userSchema);

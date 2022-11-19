@@ -7,7 +7,7 @@ import ForbiddenError from "../utils/errors/forbidden-err";
 export const getCards = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const cards = await Card.find({});
@@ -20,7 +20,7 @@ export const getCards = async (
 export const createCard = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { name, link } = req.body;
   try {
@@ -34,13 +34,12 @@ export const createCard = async (
 export const deleteCard = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const currentCard = await Card.findById(req.params.cardId);
 
-    if (!currentCard)
-      throw new NotFoundError("Карточка с указанным ID не найдена");
+    if (!currentCard) throw new NotFoundError("Карточка с указанным ID не найдена");
 
     if (!currentCard.owner.equals(req.user._id as string)) {
       throw new ForbiddenError("Недостаточно прав для удаления");
@@ -57,7 +56,7 @@ export const deleteCard = async (
 export const enableLike = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const likedCard = await Card.findByIdAndUpdate(
@@ -65,7 +64,7 @@ export const enableLike = async (
       {
         $addToSet: { likes: req.user._id },
       },
-      { new: true }
+      { new: true },
     );
 
     return res.status(200).send(likedCard);
@@ -77,7 +76,7 @@ export const enableLike = async (
 export const disableLike = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const dislikedCard = await Card.findByIdAndUpdate(
@@ -85,7 +84,7 @@ export const disableLike = async (
       {
         $pull: { likes: req.user._id },
       },
-      { new: true }
+      { new: true },
     );
 
     return res.status(200).send(dislikedCard);
