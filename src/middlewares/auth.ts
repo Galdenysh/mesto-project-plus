@@ -16,12 +16,12 @@ export default (req: Request, res: Response, next: NextFunction) => {
   const token = authorization.replace("Bearer ", "");
 
   try {
-    payload = jwt.verify(token, secretKey);
+    payload = jwt.verify(token, secretKey) as { _id: JwtPayload };
   } catch (err) {
     next(new UnauthorizedError("Необходима авторизация"));
     return;
   }
 
-  req.user = payload as { _id: JwtPayload };
+  req.user = payload;
   next();
 };

@@ -7,7 +7,7 @@ import NotFoundError from "../utils/errors/not-found-err";
 export const getUsers = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const users = await User.find({});
@@ -20,13 +20,12 @@ export const getUsers = async (
 export const getUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const currentUser = await User.findById(req.params.userId);
 
-    if (!currentUser)
-      throw new NotFoundError("Пользователь с указанным ID не найден");
+    if (!currentUser) throw new NotFoundError("Пользователь с указанным ID не найден");
 
     return res.status(200).send(currentUser);
   } catch (err) {
@@ -37,9 +36,11 @@ export const getUser = async (
 export const createUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
   try {
     const hashedPass = await hashPass(password);
 
@@ -69,7 +70,7 @@ export const createUser = async (
 export const refrashUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { name, about } = req.body;
   try {
@@ -79,11 +80,10 @@ export const refrashUser = async (
         name,
         about,
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
-    if (!refrashedUser)
-      throw new NotFoundError("Пользователь с указанным ID не найден");
+    if (!refrashedUser) throw new NotFoundError("Пользователь с указанным ID не найден");
 
     return res.status(200).send(refrashedUser);
   } catch (err) {
@@ -94,7 +94,7 @@ export const refrashUser = async (
 export const refrashAvatar = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { avatar } = req.body;
   try {
@@ -106,11 +106,10 @@ export const refrashAvatar = async (
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
 
-    if (!refrashUser)
-      throw new NotFoundError("Пользователь с указанным ID не найден");
+    if (!refrashUser) throw new NotFoundError("Пользователь с указанным ID не найден");
 
     return res.status(200).send(refrashedUser);
   } catch (err) {
@@ -121,7 +120,7 @@ export const refrashAvatar = async (
 export const login = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { email, password } = req.body;
   const secretKey = process.env.SECRET_KEY as string;
@@ -139,13 +138,12 @@ export const login = async (
 export const getInfo = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const currentUser = await User.findById(req.user._id);
 
-    if (!currentUser)
-      throw new NotFoundError("Пользователь с указанным ID не найден");
+    if (!currentUser) throw new NotFoundError("Пользователь с указанным ID не найден");
 
     return res.status(200).send(currentUser);
   } catch (err) {
