@@ -1,3 +1,4 @@
+import "./utils/loadEnv";
 import express, { NextFunction, Request, Response } from "express";
 import { errors, celebrate } from "celebrate";
 import getMestoDb from "./database/mongo";
@@ -8,6 +9,7 @@ import auth from "./middlewares/auth";
 import { ErrorWithStatus } from "./utils/types";
 import { createUserScheme, loginScheme } from "./utils/scheme";
 import { requestLogger, errorLogger } from "./middlewares/logger";
+import NotFoundError from "./utils/errors/not-found-err";
 
 const port = process.env.PORT as string;
 const app = express();
@@ -28,6 +30,10 @@ app.post("/signup", celebrate(createUserScheme), createUser);
 
 app.use("/users", auth, userRouter);
 app.use("/cards", auth, cardRouter);
+
+app.get("*", () => {
+  throw new NotFoundError("Такой страницы не существует");
+});
 
 app.use(errorLogger);
 
@@ -55,10 +61,6 @@ app.use(
     });
   }
 );
-
-app.get("*", (req: Request, res: Response) => {
-  res.status(404).send("Такой страницы не существует");
-});
 
 app.listen(+port, () => {
   // eslint-disable-next-line no-console

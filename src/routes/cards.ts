@@ -7,14 +7,14 @@ import {
   enableLike,
   disableLike,
 } from "../controllers/cards";
-import { createCardScheme } from "../utils/scheme";
+import { cardIdScheme, createCardScheme } from "../utils/scheme";
 
 const cardRouter = Router();
 
 cardRouter.get("/", getCards);
 cardRouter.post("/", celebrate(createCardScheme), createCard);
-cardRouter.delete("/:cardId", deleteCard);
-cardRouter.put("/:cardId/likes", enableLike);
-cardRouter.delete("/:cardId/likes", disableLike);
+cardRouter.delete("/:cardId", celebrate(cardIdScheme), deleteCard);
+cardRouter.put("/:cardId/likes", celebrate(cardIdScheme), enableLike);
+cardRouter.delete("/:cardId/likes", celebrate(cardIdScheme), disableLike);
 
 export default cardRouter;

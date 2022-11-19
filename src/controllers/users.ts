@@ -23,9 +23,11 @@ export const getUser = async (
   next: NextFunction
 ) => {
   try {
-    const currentUser = await User.findById(req.params.userId).orFail(() => {
+    const currentUser = await User.findById(req.params.userId);
+
+    if (!currentUser)
       throw new NotFoundError("Пользователь с указанным ID не найден");
-    });
+
     return res.status(200).send(currentUser);
   } catch (err) {
     return next(err);
@@ -52,7 +54,13 @@ export const createUser = async (
       email,
       password: hashedPass,
     });
-    return res.status(200).send(newUser);
+    return res.status(200).send({
+      _id: newUser._id,
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
+      email: newUser.email,
+    });
   } catch (err) {
     return next(err);
   }
@@ -72,9 +80,11 @@ export const refrashUser = async (
         about,
       },
       { new: true, runValidators: true }
-    ).orFail(() => {
+    );
+
+    if (!refrashedUser)
       throw new NotFoundError("Пользователь с указанным ID не найден");
-    });
+
     return res.status(200).send(refrashedUser);
   } catch (err) {
     return next(err);
@@ -97,9 +107,11 @@ export const refrashAvatar = async (
         new: true,
         runValidators: true,
       }
-    ).orFail(() => {
+    );
+
+    if (!refrashUser)
       throw new NotFoundError("Пользователь с указанным ID не найден");
-    });
+
     return res.status(200).send(refrashedUser);
   } catch (err) {
     return next(err);
@@ -130,9 +142,11 @@ export const getInfo = async (
   next: NextFunction
 ) => {
   try {
-    const currentUser = await User.findById(req.user._id).orFail(() => {
+    const currentUser = await User.findById(req.user._id);
+
+    if (!currentUser)
       throw new NotFoundError("Пользователь с указанным ID не найден");
-    });
+
     return res.status(200).send(currentUser);
   } catch (err) {
     return next(err);

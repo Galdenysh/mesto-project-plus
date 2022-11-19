@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import UnauthorizedError from "../utils/errors/unauthorized-err";
 
 export default (req: Request, res: Response, next: NextFunction) => {
@@ -22,6 +22,6 @@ export default (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-  req.user = payload;
+  req.user = payload as { _id: JwtPayload };
   next();
 };
