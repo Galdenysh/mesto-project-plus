@@ -11,3 +11,8 @@
 ```
 brew services start mongodb-community@4.4
 ```
+## Необходимые переменные окружения для работы проекта
+
+MONGO_DB
+PORT
+SECRET_KEY
