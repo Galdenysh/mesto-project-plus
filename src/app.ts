@@ -1,7 +1,7 @@
-import "./utils/loadEnv";
+import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import { errors, celebrate } from "celebrate";
-import getMestoDb from "./database/mongo";
+import mongoose from "mongoose";
 import userRouter from "./routes/users";
 import cardRouter from "./routes/cards";
 import { createUser, login } from "./controllers/users";
@@ -11,10 +11,13 @@ import { createUserScheme, loginScheme } from "./utils/scheme";
 import { requestLogger, errorLogger } from "./middlewares/logger";
 import NotFoundError from "./utils/errors/not-found-err";
 
+dotenv.config();
+
 const port = process.env.PORT as string;
+const mongoDb = process.env.MONGO_DB as string;
 const app = express();
 
-getMestoDb();
+mongoose.connect(mongoDb);
 
 app.use(express.json());
 app.use(express.urlencoded());

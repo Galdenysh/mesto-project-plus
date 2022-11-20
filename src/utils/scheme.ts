@@ -43,12 +43,12 @@ export const createUserScheme = {
 
 export const cardIdScheme = {
   params: Joi.object().keys({
-    cardId: Joi.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i),
+    cardId: Joi.string().hex().length(24),
   }),
 };
 
 export const userIdScheme = {
   params: Joi.object().keys({
-    userId: Joi.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i),
+    userId: Joi.string().hex().length(24),
   }),
 };
