@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import hashPass from "../utils/hashPass";
 import User from "../models/user";
 import NotFoundError from "../utils/errors/not-found-err";
+import { SECRET_KEY } from "../app.config";
 
 export const getUsers = async (
   req: Request,
@@ -123,10 +124,9 @@ export const login = async (
   next: NextFunction,
 ) => {
   const { email, password } = req.body;
-  const secretKey = process.env.SECRET_KEY as string;
   try {
     const findedUser = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: findedUser._id }, secretKey, {
+    const token = jwt.sign({ _id: findedUser._id }, SECRET_KEY, {
       expiresIn: "7d",
     });
     return res.status(200).send({ token });
