@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import { errors, celebrate } from "celebrate";
 import mongoose from "mongoose";
@@ -10,14 +9,11 @@ import { ErrorWithStatus } from "./utils/types";
 import { createUserScheme, loginScheme } from "./utils/scheme";
 import { requestLogger, errorLogger } from "./middlewares/logger";
 import NotFoundError from "./utils/errors/not-found-err";
+import { MONGO_DB, PORT } from "./app.config";
 
-dotenv.config();
-
-const port = process.env.PORT as string;
-const mongoDb = process.env.MONGO_DB as string;
 const app = express();
 
-mongoose.connect(mongoDb);
+mongoose.connect(MONGO_DB);
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -65,7 +61,7 @@ app.use(
   },
 );
 
-app.listen(+port, () => {
+app.listen(+PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`App listening on port ${port}`);
+  console.log(`App listening on port ${PORT}`);
 });
